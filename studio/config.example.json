@@ -1,0 +1,23 @@
+{
+  "niche": "일상 속 의외의 과학 사실을 직접 계산·실험해 보는 채널",
+  "language": "ko",
+  "audience": "호기심 많은 10~30대 한국어 시청자",
+  "handle": "@StaticHour.shorts",
+  "voice": "ai",
+  "font_path": "/usr/share/fonts/truetype/nanum/NanumGothicExtraBold.ttf",
+  "tts_command": "edge-tts --voice ko-KR-InJoonNeural --text {text} --write-media {out}",
+  "bgm_path": null,
+  "privacy": "private",
+  "category_id": "27",
+  "formats": [
+    {"id": "myth-check", "description": "흔한 상식 하나를 숫자로 검증하고 결론을 내린다"},
+    {"id": "scale-compare", "description": "감이 안 오는 크기·시간·확률을 일상 사물로 비교한다"},
+    {"id": "what-if", "description": "'만약 ~라면?' 질문을 물리적으로 계산해 답한다"},
+    {"id": "one-fact-deep", "description": "잘 알려지지 않은 사실 하나를 출처와 함께 30초에 설명한다"}
+  ],
+  "links": [
+    {"label": "영상에 나온 실험 도구", "url": "https://link.coupang.com/a/REPLACE_ME"}
+  ],
+  "link_disclosure": "※ 이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.",
+  "pinned_comment": "영상에 쓴 계산 과정과 출처는 설명란에 있어요."
+}
