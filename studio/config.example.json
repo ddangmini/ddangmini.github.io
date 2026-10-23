@@ -15,9 +15,7 @@
     {"id": "what-if", "description": "'만약 ~라면?' 질문을 물리적으로 계산해 답한다"},
     {"id": "one-fact-deep", "description": "잘 알려지지 않은 사실 하나를 출처와 함께 30초에 설명한다"}
   ],
-  "links": [
-    {"label": "영상에 나온 실험 도구", "url": "https://link.coupang.com/a/REPLACE_ME"}
-  ],
+  "profile_cta": "영상 속 도구는 채널 프로필 링크에 모아뒀어요.",
   "link_disclosure": "※ 이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.",
   "pinned_comment": "영상에 쓴 계산 과정과 출처는 설명란에 있어요."
 }

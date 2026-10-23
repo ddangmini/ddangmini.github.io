@@ -62,11 +62,37 @@ def _tts(cfg, text, out):
     return out
 
 
+def _duration(path):
+    r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
+                       check=True, capture_output=True, text=True)
+    return float(r.stdout.strip())
+
+
+def _voice_track(cfg, segs, out_dir):
+    """Synthesize each segment separately so every caption lasts exactly as long as its line."""
+    if not cfg.get("tts_command"):
+        return None, segs
+    timed, parts = [], []
+    for i, (cap, nar, _) in enumerate(segs):
+        clip = _tts(cfg, nar, out_dir / f"voice_{i:02d}.mp3")
+        sec = _duration(clip) + 0.25  # short breath between lines
+        padded = out_dir / f"voice_{i:02d}.wav"
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(clip), "-af", "apad", "-t", f"{sec:.3f}",
+                        "-ar", "44100", "-ac", "1", str(padded)], check=True)
+        timed.append((cap, nar, sec))
+        parts.append(f"file '{padded.resolve()}'")
+    (out_dir / "voice.txt").write_text("\n".join(parts) + "\n")
+    voice = out_dir / "voice.m4a"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(out_dir / "voice.txt"),
+                    "-c:a", "aac", str(voice)], check=True)
+    return voice, timed
+
+
 def render(script, cfg, out_dir):
     out_dir = Path(out_dir)
     frames = out_dir / "frames"
     frames.mkdir(parents=True, exist_ok=True)
-    segs = timeline(script)
+    voice, segs = _voice_track(cfg, timeline(script), out_dir)
     concat = []
     for i, (cap, _, sec) in enumerate(segs):
         f = frames / f"{i:02d}.png"
@@ -76,7 +102,6 @@ def render(script, cfg, out_dir):
     (out_dir / "concat.txt").write_text("\n".join(concat) + "\n")
     total = sum(s for _, _, s in segs)
 
-    voice = _tts(cfg, script.narration_text(), out_dir / "voice.mp3")
     bgm = cfg.get("bgm_path")
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(out_dir / "concat.txt")]
     audio_inputs = [p for p in (voice, bgm) if p]

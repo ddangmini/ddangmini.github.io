@@ -46,17 +46,25 @@ def test_ypp_threshold_doubles_in_2027():
 
 
 def test_ads_only_after_joining():
-    rows, joined = revenue.simulate(revenue.Assumptions(start=date(2026, 11, 1), views_per_short_start=200_000,
+    rows, joined, shopping = revenue.simulate(revenue.Assumptions(start=date(2026, 11, 1), views_per_short_start=200_000,
                                                          views_per_short_cap=200_000))
-    assert joined is not None
+    assert joined is not None and shopping is not None and shopping <= joined
     assert all(r["ads"] == 0 for r in rows if r["date"] < joined)
     assert any(r["ads"] > 0 for r in rows)
 
 
-def test_upload_meta_discloses_links_and_ai():
+def test_sales_before_ypp_only_from_profile_link():
+    a = revenue.Assumptions(start=date(2026, 11, 1), days=30)
+    rows, joined, shopping = revenue.simulate(a)
+    assert shopping is None
+    expected = rows[0]["views"] * a.profile_link_ctr * a.conversion * a.payout_usd
+    assert abs(rows[0]["links"] - expected) < 1e-9
+
+
+def test_upload_meta_discloses_affiliate_and_ai():
     s = writer.sample_script(FMT)
-    cfg = {"voice": "ai", "links": [{"label": "도구", "url": "https://example.com"}]}
+    cfg = {"voice": "ai", "profile_cta": "제품 링크는 채널 프로필에"}
     meta = upload_meta(s, cfg)
     assert meta["status"]["containsSyntheticMedia"] is True
-    assert "https://example.com" in meta["snippet"]["description"]
-    assert "수수료" in build_description(s, cfg)
+    desc = build_description(s, cfg)
+    assert "채널 프로필" in desc and "수수료" in desc and "http" not in desc.split("출처:")[0]

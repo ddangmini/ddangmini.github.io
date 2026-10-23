@@ -32,10 +32,10 @@ def append_history(entry):
 
 def build_description(script, cfg):
     parts = [script.description.strip(), ""]
-    links = cfg.get("links", [])
-    if links:
-        parts += [f"{l['label']}: {l['url']}" for l in links]
-        parts += [cfg.get("link_disclosure", "※ 위 링크는 제휴 링크로, 구매 시 채널이 수수료를 받을 수 있습니다."), ""]
+    # Links in Shorts descriptions are not clickable, so point viewers at the
+    # channel-page link instead of pasting URLs.
+    if cfg.get("profile_cta"):
+        parts += [cfg["profile_cta"], cfg.get("link_disclosure", "※ 제휴 링크로, 구매 시 채널이 수수료를 받을 수 있습니다."), ""]
     if script.sources:
         parts += ["출처:"] + [f"- {s}" for s in script.sources] + [""]
     parts.append(" ".join("#" + t.replace(" ", "") for t in script.tags[:3]) + " #Shorts")
