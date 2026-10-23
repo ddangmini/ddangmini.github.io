@@ -1,0 +1,4 @@
+# Keep the Shorts pipeline out of the published GitHub Pages site
+# (the site only hosts the OAuth homepage, privacy policy and terms).
+exclude:
+  - studio
